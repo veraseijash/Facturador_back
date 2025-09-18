@@ -1,0 +1,32 @@
+export class UpdateClienteDto {
+  nro_documento?: string;
+  razon_social?: string;
+  tipo_cliente?: string;
+  tipo_documento?: string;
+  empresa_web?: string;
+  activo?: number;
+  direccion?: string;
+  telefono?: string;
+  opcion?: string;
+  nombre_contacto_facturacion?: string;
+  email_contacto_facturacion?: string;
+  formato_recepcion?: string;
+  comentario?: string;
+  clientePlan?: number;
+  conOrdenCompra?: number;
+  conNumeroRecepcion?: number;
+  conEntradaMercaderia?: number;
+  reseller?: string;
+  condicion_pago?: string;
+  plan_minimo?: string;
+  plan_minimo_uf?: number;
+  giro?: string;
+  fecha_creacion?: string;
+  user_id?: string;
+  sin_iva?: number;
+  generar_prefactura?: number;
+  minimo_servicio?: number;
+  experiencia?: string;
+  notas?: string;
+  autorizoEnvio?: number;
+}

@@ -26,6 +26,9 @@ export class RolesService {
     const rolesWaypay = Object.assign(rolesFound, Roles);
     return this.rolesRepository.save(rolesWaypay);
   }
+  getRoles() {
+    return this.rolesRepository.find();
+  }
   async getRolesId(role_id: number) {
     const rolesFound = await this.rolesRepository.find({
       where: { role_id },

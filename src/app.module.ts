@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { UsersRolesModule } from './users_roles/users_roles.module';
 import { RolesModule } from './roles/roles.module';
+import { DataPrimerNivelModule } from './data_primer_nivel/data_primer_nivel.modules';
+import { ClientesModule } from './clientes/clientes.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { RolesModule } from './roles/roles.module';
     UsersModule,
     UsersRolesModule,
     RolesModule,
+    DataPrimerNivelModule,
+    ClientesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

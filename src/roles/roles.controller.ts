@@ -13,10 +13,17 @@ import { RolesService } from './roles.service';
 import { CreateRolesDto } from './dto/create-roles.dto';
 import { UpdateRolesDto } from './dto/update-roles';
 import { JwtUserGuard } from '../users/jwt-user.guard';
+import { Roles } from './roles.entity';
 
 @Controller('roles')
 export class RolesController {
   constructor(private rolesService: RolesService) {}
+
+  @UseGuards(JwtUserGuard)
+  @Get('/list-roles')
+  getRoles(): Promise<Roles[]> {
+    return this.rolesService.getRoles();
+  }
 
   @UseGuards(JwtUserGuard)
   @Patch(':role_id')
