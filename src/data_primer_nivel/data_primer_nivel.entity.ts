@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Cliente } from 'src/clientes/clientes.entity';
+import { DataSegundoNivel } from 'src/data_segundo_nivel/data_segundo_nivel.entity';
 @Entity({ name: 'data_primer_nivel' })
 export class Data_primer_nivel {
   @PrimaryGeneratedColumn()
@@ -65,4 +67,6 @@ export class Data_primer_nivel {
   tiene_doc: boolean;
   @Column({ type: 'tinyint', width: 1, default: 0, nullable: false })
   comment: boolean;
+  @OneToMany(() => DataSegundoNivel, (segundoNivel) => segundoNivel.primerNivel)
+  dataSegundos: DataSegundoNivel[];
 }

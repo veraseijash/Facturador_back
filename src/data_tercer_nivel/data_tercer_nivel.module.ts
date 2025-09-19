@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
-import { DataPrimerNivelService } from './data_primer_nivel.service';
-import { DataPrimerNivelController } from './data_primer_nivel.controller';
+import { DataTercerNivelService } from './data_tercer_nivel.service';
+import { DataTercerNivelController } from './data_tercer_nivel.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../users/jwt.constants';
 import { JwtStrategy } from '../users/jwt.strategy';
-import { Data_primer_nivel } from './data_primer_nivel.entity';
+import { DataTercerNivel } from './data_tercer_nivel.entity';
 import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Data_primer_nivel, DataSegundoNivel]),
+    TypeOrmModule.forFeature([DataTercerNivel, DataSegundoNivel]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '20h' },
     }),
   ],
-  controllers: [DataPrimerNivelController],
-  providers: [DataPrimerNivelService, JwtStrategy],
-  exports: [DataPrimerNivelService],
+  controllers: [DataTercerNivelController],
+  providers: [DataTercerNivelService, JwtStrategy],
+  exports: [DataTercerNivelService],
 })
-export class DataPrimerNivelModule {}
+export class DataTercerNivelModule {}

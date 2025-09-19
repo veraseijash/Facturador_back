@@ -4,12 +4,16 @@ import { Data_primer_nivel } from './data_primer_nivel.entity';
 import { Repository } from 'typeorm';
 import { CreateDataPrimerNiveDto } from './dto/create-data_primer_nivel.dto';
 import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
+import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
 
 Injectable();
 export class DataPrimerNivelService {
   constructor(
     @InjectRepository(Data_primer_nivel)
-    private dataPrimerNivelRepository: Repository<Data_primer_nivel>,
+    private readonly dataPrimerNivelRepository: Repository<Data_primer_nivel>,
+
+    @InjectRepository(DataSegundoNivel)
+    private readonly dataSegundoNivelRepository: Repository<DataSegundoNivel>, // 👈 inyección agregada
   ) {}
   async createDataPrimerNivel(
     dataPrimerNivel: CreateDataPrimerNiveDto,
@@ -35,7 +39,7 @@ export class DataPrimerNivelService {
   ): Promise<Data_primer_nivel> {
     const dataPrimerNivelFound = await this.dataPrimerNivelRepository.findOne({
       where: { id_primer_nivel },
-      relations: ['cliente'],
+      relations: ['cliente', 'dataSegundos', 'dataSegundos.dataTerceros'],
     });
 
     if (!dataPrimerNivelFound) {
@@ -65,6 +69,8 @@ export class DataPrimerNivelService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    await this.dataSegundoNivelRepository.delete({ id_primer_nivel });
 
     await this.dataPrimerNivelRepository.remove(dataPrimerNivelFound);
 

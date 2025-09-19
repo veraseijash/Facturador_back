@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { UsersRolesModule } from './users_roles/users_roles.module';
 import { RolesModule } from './roles/roles.module';
 import { DataPrimerNivelModule } from './data_primer_nivel/data_primer_nivel.modules';
+import { DataSegundoNivelModule } from './data_segundo_nivel/data_segundo_nivel.module';
+import { DataTercerNivelModule } from './data_tercer_nivel/data_tercer_nivel.module';
 import { ClientesModule } from './clientes/clientes.module';
 
 @Module({
@@ -24,6 +26,8 @@ import { ClientesModule } from './clientes/clientes.module';
     UsersRolesModule,
     RolesModule,
     DataPrimerNivelModule,
+    DataSegundoNivelModule,
+    DataTercerNivelModule,
     ClientesModule,
   ],
   controllers: [AppController],
