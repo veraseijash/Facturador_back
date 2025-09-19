@@ -1,4 +1,11 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Data_primer_nivel } from 'src/data_primer_nivel/data_primer_nivel.entity';
 import { DataTercerNivel } from 'src/data_tercer_nivel/data_tercer_nivel.entity';
 

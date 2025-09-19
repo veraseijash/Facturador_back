@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Cliente } from 'src/clientes/clientes.entity';
 import { DataSegundoNivel } from 'src/data_segundo_nivel/data_segundo_nivel.entity';
+import { StatusPrefactura } from 'src/status_prefactura/status_prefactura.entity';
 @Entity({ name: 'data_primer_nivel' })
 export class Data_primer_nivel {
   @PrimaryGeneratedColumn()
@@ -69,4 +70,6 @@ export class Data_primer_nivel {
   comment: boolean;
   @OneToMany(() => DataSegundoNivel, (segundoNivel) => segundoNivel.primerNivel)
   dataSegundos: DataSegundoNivel[];
+  @OneToMany(() => StatusPrefactura, (s) => s.dataPrimerNivel)
+  statusPrefacturas: StatusPrefactura[];
 }

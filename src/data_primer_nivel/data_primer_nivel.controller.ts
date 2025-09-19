@@ -22,9 +22,10 @@ export class DataPrimerNivelController {
   @UseGuards(JwtUserGuard)
   @Post('por-fecha-tipo')
   async buscarPorFechaYTipo(@Body() dto: FindDataPrimerNivelDto) {
-    return this.dataPrimerNivelService.findDataPrimerNiveByFecha(
+    return this.dataPrimerNivelService.findDataPrimerNivelByFecha(
       dto.fecha,
       dto.tipo,
+      dto.option,
     );
   }
 

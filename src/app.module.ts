@@ -9,6 +9,7 @@ import { DataPrimerNivelModule } from './data_primer_nivel/data_primer_nivel.mod
 import { DataSegundoNivelModule } from './data_segundo_nivel/data_segundo_nivel.module';
 import { DataTercerNivelModule } from './data_tercer_nivel/data_tercer_nivel.module';
 import { ClientesModule } from './clientes/clientes.module';
+import { StatusPrefacturaModule } from './status_prefactura/status_prefactura.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ClientesModule } from './clientes/clientes.module';
     DataSegundoNivelModule,
     DataTercerNivelModule,
     ClientesModule,
+    StatusPrefacturaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

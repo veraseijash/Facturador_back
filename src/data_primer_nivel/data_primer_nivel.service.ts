@@ -48,16 +48,25 @@ export class DataPrimerNivelService {
 
     return dataPrimerNivelFound;
   }
-  async findDataPrimerNiveByFecha(fecha: string, tipo: string) {
-    return await this.dataPrimerNivelRepository.find({
-      where: {
-        fecha: fecha,
-        tipo: tipo,
-      },
-      order: { razon_social: 'ASC' },
-      relations: ['cliente'],
-    });
+  async findDataPrimerNivelByFecha(
+    fecha: string,
+    tipo: string,
+    option: 'pendiente' | 'facturado' | 'sin_consumo',
+  ) {
+    const field = option === 'pendiente' ? 'totalPendiente' : 'totalFacturado';
+
+    return this.dataPrimerNivelRepository
+      .createQueryBuilder('data')
+      .leftJoinAndSelect('data.cliente', 'cliente')
+      .leftJoinAndSelect('cliente.user', 'user')
+      .leftJoinAndSelect('data.statusPrefacturas', 'statusPrefacturas')
+      .where('data.fecha = :fecha', { fecha })
+      .andWhere('data.tipo = :tipo', { tipo })
+      .andWhere(`COALESCE(data.${field}, 0) > 0`)
+      .orderBy('data.razon_social', 'ASC')
+      .getMany();
   }
+
   async deleteDataPrimerNivel(id_primer_nivel: number) {
     const dataPrimerNivelFound = await this.dataPrimerNivelRepository.findOne({
       where: { id_primer_nivel },

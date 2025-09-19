@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Index,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { User } from 'src/users/users.entity';
 
 @Entity({ name: 'clientes' })
 @Index('idx_clientes_nro_documento_activo', ['nro_documento', 'activo'])
@@ -188,4 +197,8 @@ export class Cliente {
 
   @Column({ type: 'tinyint', default: 1 })
   autorizoEnvio: number;
+
+  @ManyToOne(() => User, (user) => user.clientes, { nullable: true })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

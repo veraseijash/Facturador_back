@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { FindOperator } from 'typeorm';
 import { UserRoles } from '../users_roles/users_roles.entity';
+import { Cliente } from 'src/clientes/clientes.entity';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -27,4 +28,6 @@ export class User {
   image: string;
   @OneToMany(() => UserRoles, (userRole) => userRole.user)
   roles: UserRoles[];
+  @OneToMany(() => Cliente, (cliente) => cliente.user)
+  clientes: Cliente[];
 }
