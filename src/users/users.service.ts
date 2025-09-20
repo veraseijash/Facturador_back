@@ -64,7 +64,6 @@ export class UsersService {
       relations: ['roles', 'roles.role'],
     });
     if (!user) return null;
-
     const isMatch = await bcrypt.compare(pass, user.passwordb);
     if (!isMatch) return null;
 
