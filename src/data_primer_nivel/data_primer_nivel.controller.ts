@@ -13,6 +13,7 @@ import { DataPrimerNivelService } from './data_primer_nivel.service';
 import { CreateDataPrimerNiveDto } from './dto/create-data_primer_nivel.dto';
 import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
 import { FindDataPrimerNivelDto } from './dto/find-data-primer-nivel.dto';
+import { FindDataPrimerNivelIdDto } from './dto/find-data-primer-nivel-id.dto';
 import { JwtUserGuard } from '../users/jwt-user.guard';
 
 @Controller('dataPrimerNivel')
@@ -24,6 +25,15 @@ export class DataPrimerNivelController {
   async buscarPorFechaYTipo(@Body() dto: FindDataPrimerNivelDto) {
     return this.dataPrimerNivelService.findDataPrimerNivelByFecha(
       dto.fecha,
+      dto.tipo,
+      dto.option,
+    );
+  }
+  @UseGuards(JwtUserGuard)
+  @Post('por-tipo-id')
+  async findDataPrimerNivelId(@Body() dto: FindDataPrimerNivelIdDto) {
+    return this.dataPrimerNivelService.findDataPrimerNivelId(
+      dto.id,
       dto.tipo,
       dto.option,
     );

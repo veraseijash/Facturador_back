@@ -67,6 +67,43 @@ export class DataPrimerNivelService {
       .getMany();
   }
 
+  async findDataPrimerNivelId(
+    id_primer_nivel: number,
+    tipo: string,
+    option: 'pendiente' | 'facturado' | 'sin_consumo',
+  ): Promise<Data_primer_nivel> {
+    const qb = this.dataPrimerNivelRepository
+      .createQueryBuilder('primer')
+      .leftJoinAndSelect('primer.cliente', 'cliente')
+      .leftJoinAndSelect('primer.dataSegundos', 'segundos')
+      .leftJoinAndSelect('segundos.dataTerceros', 'terceros')
+      .where('primer.id_primer_nivel = :id', { id: id_primer_nivel })
+      .andWhere('segundos.tipo = :tipo', { tipo })
+      .andWhere('terceros.tipo = :tipo', { tipo });
+
+    if (option === 'facturado') {
+      qb.andWhere('COALESCE(segundos.cantidadFacturada, 0) > 0').andWhere(
+        'terceros.nro_factura IS NOT NULL',
+      );
+    } else {
+      qb.andWhere('COALESCE(segundos.cantidadFacturada, 0) = 0').andWhere(
+        'terceros.nro_factura IS NULL',
+      );
+    }
+
+    // Ordenamiento
+    qb.orderBy('segundos.cuenta', 'ASC') // primero por cuenta
+      .addOrderBy('terceros.servicio', 'ASC'); // luego por servicio
+
+    const dataPrimerNivelFound = await qb.getOne();
+
+    if (!dataPrimerNivelFound) {
+      throw new HttpException('Registro no encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    return dataPrimerNivelFound;
+  }
+
   async deleteDataPrimerNivel(id_primer_nivel: number) {
     const dataPrimerNivelFound = await this.dataPrimerNivelRepository.findOne({
       where: { id_primer_nivel },
