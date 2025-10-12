@@ -10,6 +10,8 @@ import { DataSegundoNivelModule } from './data_segundo_nivel/data_segundo_nivel.
 import { DataTercerNivelModule } from './data_tercer_nivel/data_tercer_nivel.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { StatusPrefacturaModule } from './status_prefactura/status_prefactura.module';
+import { ServiciosWebModule } from './serviciosWeb/serviciosWeb.module';
+import { ValoresEconomicosModule } from './valores_economicos/valores_economicos.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { StatusPrefacturaModule } from './status_prefactura/status_prefactura.mo
     DataTercerNivelModule,
     ClientesModule,
     StatusPrefacturaModule,
+    ServiciosWebModule,
+    ValoresEconomicosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
