@@ -6,6 +6,15 @@ import { CreateDataPrimerNiveDto } from './dto/create-data_primer_nivel.dto';
 import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
 import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
 import { DataTercerNivel } from '../data_tercer_nivel/data_tercer_nivel.entity';
+import { CompareDataPrimerNivelDto } from './dto/compare-data_primer_nivel.dto';
+
+export interface ComparacionResult {
+  id_cliente: number;
+  fecha: string;
+  total_consumido: number;
+  comparacion: number;
+}
+
 Injectable();
 export class DataPrimerNivelService {
   constructor(
@@ -166,6 +175,43 @@ export class DataPrimerNivelService {
     return {
       totalFacturado,
       totalPendiente,
+    };
+  }
+
+  async compareConsumptionPerMonth(
+    compareDto: CompareDataPrimerNivelDto,
+  ): Promise<ComparacionResult | null> {
+    const { id_cliente, fecha } = compareDto;
+
+    const result = await this.dataPrimerNivelRepository
+      .createQueryBuilder('c1')
+      .leftJoin(
+        'data_primer_nivel',
+        'c2',
+        `c2.id_cliente = c1.id_cliente
+       AND c2.fecha = DATE_FORMAT(
+          DATE_SUB(CONCAT(c1.fecha, '-01'), INTERVAL 1 MONTH),
+          '%Y-%m'
+       )`,
+      )
+      .select([
+        `CASE
+        WHEN c2.total_consumido IS NULL THEN 2
+        WHEN c1.total_consumido > c2.total_consumido THEN 2
+        WHEN c1.total_consumido < c2.total_consumido THEN 1
+        ELSE 0
+      END AS comparacion`,
+      ])
+      .where('c1.id_cliente = :id_cliente', { id_cliente })
+      .andWhere('c1.fecha = :fecha', { fecha })
+      .getRawOne<ComparacionResult>();
+
+    if (!result) return null;
+
+    // 🔹 Convertimos a número
+    return {
+      ...result,
+      comparacion: Number(result.comparacion),
     };
   }
 }

@@ -14,6 +14,7 @@ import { CreateDataPrimerNiveDto } from './dto/create-data_primer_nivel.dto';
 import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
 import { FindDataPrimerNivelDto } from './dto/find-data-primer-nivel.dto';
 import { FindDataPrimerNivelIdDto } from './dto/find-data-primer-nivel-id.dto';
+import { CompareDataPrimerNivelDto } from './dto/compare-data_primer_nivel.dto';
 import { JwtUserGuard } from '../users/jwt-user.guard';
 
 @Controller('dataPrimerNivel')
@@ -70,5 +71,11 @@ export class DataPrimerNivelController {
   @Patch('actualizar-totales/:id')
   async actualizarTotales(@Param('id') id: number) {
     return this.dataPrimerNivelService.actualizarTotales(id);
+  }
+
+  @UseGuards(JwtUserGuard)
+  @Post('comparar')
+  async compareConsumption(@Body() compareDto: CompareDataPrimerNivelDto) {
+    return this.dataPrimerNivelService.compareConsumptionPerMonth(compareDto);
   }
 }
