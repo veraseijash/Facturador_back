@@ -7,10 +7,15 @@ import { jwtConstants } from '../users/jwt.constants';
 import { JwtStrategy } from '../users/jwt.strategy';
 import { Data_primer_nivel } from './data_primer_nivel.entity';
 import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
+import { DataTercerNivel } from '../data_tercer_nivel/data_tercer_nivel.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Data_primer_nivel, DataSegundoNivel]),
+    TypeOrmModule.forFeature([
+      Data_primer_nivel,
+      DataSegundoNivel,
+      DataTercerNivel,
+    ]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '20h' },

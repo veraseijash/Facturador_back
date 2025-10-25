@@ -84,7 +84,7 @@ export class DataSegundoNivelService {
     const dataSegundoNivelFound = await this.dataSegundoNivelRepository.findOne(
       {
         where: { id_segundo_nivel },
-        relations: ['dataTercerNivel'], // opcional: cargar la relación
+        relations: ['dataTerceros'], // opcional: cargar la relación
       },
     );
 
@@ -100,7 +100,7 @@ export class DataSegundoNivelService {
     return await this.dataSegundoNivelRepository.find({
       where: { id_primer_nivel },
       order: { cuenta: 'ASC' },
-      relations: ['dataTercerNivel'], // opcional
+      relations: ['dataTerceros'], // opcional
     });
   }
 

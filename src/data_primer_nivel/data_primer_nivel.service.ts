@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateDataPrimerNiveDto } from './dto/create-data_primer_nivel.dto';
 import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
 import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
-
+import { DataTercerNivel } from '../data_tercer_nivel/data_tercer_nivel.entity';
 Injectable();
 export class DataPrimerNivelService {
   constructor(
@@ -13,7 +13,10 @@ export class DataPrimerNivelService {
     private readonly dataPrimerNivelRepository: Repository<Data_primer_nivel>,
 
     @InjectRepository(DataSegundoNivel)
-    private readonly dataSegundoNivelRepository: Repository<DataSegundoNivel>, // 👈 inyección agregada
+    private readonly dataSegundoNivelRepository: Repository<DataSegundoNivel>,
+
+    @InjectRepository(DataTercerNivel)
+    private readonly dataTercerNivelRepository: Repository<DataTercerNivel>,
   ) {}
   async createDataPrimerNivel(
     dataPrimerNivel: CreateDataPrimerNiveDto,
@@ -121,5 +124,48 @@ export class DataPrimerNivelService {
     await this.dataPrimerNivelRepository.remove(dataPrimerNivelFound);
 
     return { message: `Facturador ${id_primer_nivel} eliminado correctamente` };
+  }
+
+  async actualizarTotales(id_primer_nivel: number): Promise<{
+    totalFacturado: number;
+    totalPendiente: number;
+  }> {
+    // 🔹 Total facturado = nro_factura IS NULL
+    const facturadoResult = await this.dataTercerNivelRepository
+      .createQueryBuilder('t')
+      .select('COALESCE(SUM(t.total), 0)', 'totalFacturado')
+      .where('t.id_primer_nivel = :id', { id: id_primer_nivel })
+      .andWhere('t.nro_factura IS NULL')
+      .getRawOne<{ totalFacturado: string }>();
+
+    const totalFacturado =
+      facturadoResult && facturadoResult.totalFacturado
+        ? parseFloat(facturadoResult.totalFacturado)
+        : 0;
+
+    // 🔹 Total pendiente = nro_factura IS NOT NULL
+    const pendienteResult = await this.dataTercerNivelRepository
+      .createQueryBuilder('t')
+      .select('COALESCE(SUM(t.total), 0)', 'totalPendiente')
+      .where('t.id_primer_nivel = :id', { id: id_primer_nivel })
+      .andWhere('t.nro_factura IS NOT NULL')
+      .getRawOne<{ totalPendiente: string }>();
+
+    const totalPendiente =
+      pendienteResult && pendienteResult.totalPendiente
+        ? parseFloat(pendienteResult.totalPendiente)
+        : 0;
+    // 🔹 Actualizar en data_primer_nivel
+    const total_consumido = totalFacturado + totalPendiente;
+    await this.dataPrimerNivelRepository.update(id_primer_nivel, {
+      totalFacturado,
+      totalPendiente,
+      total_consumido,
+    });
+
+    return {
+      totalFacturado,
+      totalPendiente,
+    };
   }
 }

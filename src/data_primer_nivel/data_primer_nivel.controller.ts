@@ -65,4 +65,10 @@ export class DataPrimerNivelController {
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.dataPrimerNivelService.deleteDataPrimerNivel(id);
   }
+
+  @UseGuards(JwtUserGuard)
+  @Patch('actualizar-totales/:id')
+  async actualizarTotales(@Param('id') id: number) {
+    return this.dataPrimerNivelService.actualizarTotales(id);
+  }
 }

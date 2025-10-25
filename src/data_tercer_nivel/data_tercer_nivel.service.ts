@@ -5,12 +5,14 @@ import { DataTercerNivel } from './data_tercer_nivel.entity';
 import { CreateDataTercerNivelDto } from './dto/create-data_tercer_nivel.dto';
 import { UpdateDataTercerNivelDto } from './dto/update-data_tercer_nivel.dto';
 import { DataSegundoNivel } from '../data_segundo_nivel/data_segundo_nivel.entity';
+import { DataPrimerNivelService } from '../data_primer_nivel/data_primer_nivel.service';
 
 @Injectable()
 export class DataTercerNivelService {
   constructor(
     @InjectRepository(DataTercerNivel)
     private readonly dataTercerNivelRepository: Repository<DataTercerNivel>,
+    private readonly dataPrimerNivelService: DataPrimerNivelService,
 
     @InjectRepository(DataSegundoNivel)
     private readonly dataSegundoNivelRepository: Repository<DataSegundoNivel>,
@@ -26,7 +28,6 @@ export class DataTercerNivelService {
       segundoNivel = await this.dataSegundoNivelRepository.findOne({
         where: { id_segundo_nivel: dataTercerNivelDto.id_segundo_nivel },
       });
-
       if (!segundoNivel) {
         throw new HttpException(
           'Registro padre no encontrado',
@@ -110,6 +111,7 @@ export class DataTercerNivelService {
 
   // -------------------- Eliminar --------------------
   async deleteDataTercerNivel(id_tercer_nivel: number) {
+    // Buscar registro
     const dataTercerNivelFound = await this.dataTercerNivelRepository.findOne({
       where: { id_tercer_nivel },
     });
@@ -121,10 +123,28 @@ export class DataTercerNivelService {
       );
     }
 
+    // Verificar id_primer_nivel
+    const id_primer_nivel = dataTercerNivelFound.id_primer_nivel;
+    if (!id_primer_nivel) {
+      throw new HttpException(
+        `El registro ${id_tercer_nivel} no tiene un id_primer_nivel asociado`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Eliminar registro
     await this.dataTercerNivelRepository.remove(dataTercerNivelFound);
 
-    return { message: `Servicio ${id_tercer_nivel} eliminada correctamente` };
+    // Actualizar totales en primer nivel
+    const totales =
+      await this.dataPrimerNivelService.actualizarTotales(id_primer_nivel);
+
+    return {
+      message: true,
+      ...totales,
+    };
   }
+
   // -------------------- Eliminar por primer nivel --------------------
   async deleteDataTercerNivelByprimer(id_primer_nivel: number) {
     const dataTercerNivelFound = await this.dataTercerNivelRepository.findOne({
