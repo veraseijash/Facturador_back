@@ -12,7 +12,8 @@ import { ClientesModule } from './clientes/clientes.module';
 import { StatusPrefacturaModule } from './status_prefactura/status_prefactura.module';
 import { ServiciosWebModule } from './serviciosWeb/serviciosWeb.module';
 import { ValoresEconomicosModule } from './valores_economicos/valores_economicos.module';
-
+import { DocumentosFacturadorModule } from './documentos_facturador/documentos_facturador.module';
+import { CotizacionesDocumentosModule } from './cotizaciones_documentos/cotizaciones_documentos.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -35,6 +36,8 @@ import { ValoresEconomicosModule } from './valores_economicos/valores_economicos
     StatusPrefacturaModule,
     ServiciosWebModule,
     ValoresEconomicosModule,
+    DocumentosFacturadorModule,
+    CotizacionesDocumentosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
