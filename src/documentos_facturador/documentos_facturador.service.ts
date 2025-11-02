@@ -5,6 +5,7 @@ import { DocumentosFacturador } from './documentos_facturador.entity';
 import { CreateDocumentosFacturadorDto } from './dto/create-documentos_facturador.dto';
 import { UpdateDocumentosFacturadorDto } from './dto/update-documentos_facturador.dto';
 import { DocumentoFacturadorRaw } from './interfaces/documento-raw.interface';
+import { Request } from 'express';
 
 @Injectable()
 export class DocumentosFacturadorService {
@@ -70,11 +71,12 @@ export class DocumentosFacturadorService {
     };
   }
 
-  async findByPrimerNivel(id_primer_nivel: number) {
-    return await this.DocumentosFacturadorRepository.createQueryBuilder('doc')
-      .select([
-        'doc.id_doc_fact AS id_doc_fact',
-        `CASE doc.tipo_documento
+  async findByPrimerNivel(id_primer_nivel: number, req?: Request) {
+    const documentos =
+      await this.DocumentosFacturadorRepository.createQueryBuilder('doc')
+        .select([
+          'doc.id_doc_fact AS id_doc_fact',
+          `CASE doc.tipo_documento
           WHEN '1' THEN '801 - Orden de Compra'
           WHEN '2' THEN '802 - Nota de Pedido'
           WHEN '3' THEN '803 - Contrato'
@@ -85,16 +87,27 @@ export class DocumentosFacturadorService {
           WHEN '8' THEN 'HES - HES'
           WHEN '9' THEN 'CON - Conformidad'
         END AS tipo_documento`,
-        'doc.cot_id AS cot_id',
-        'doc.procedencia AS procedencia',
-        `DATE_FORMAT(doc.fecha_documento, '%d-%m-%Y') AS fecha_documento`,
-        'doc.id_documento AS id_documento',
-        'doc.tipo_documento AS idtipo_documento',
-        'doc.nombre_documento AS nombre_documento',
-        'doc.id_doc_fact AS id',
-      ])
-      .where('doc.id_primer_nivel = :id_primer_nivel', { id_primer_nivel })
-      .orderBy('doc.fecha_documento', 'DESC')
-      .getRawMany<DocumentoFacturadorRaw>();
+          'doc.cot_id AS cot_id',
+          'doc.procedencia AS procedencia',
+          `DATE_FORMAT(doc.fecha_documento, '%d-%m-%Y') AS fecha_documento`,
+          'doc.id_documento AS id_documento',
+          'doc.tipo_documento AS idtipo_documento',
+          'doc.nombre_documento AS nombre_documento',
+          'doc.id_doc_fact AS id',
+        ])
+        .where('doc.id_primer_nivel = :id_primer_nivel', { id_primer_nivel })
+        .orderBy('doc.fecha_documento', 'DESC')
+        .getRawMany<DocumentoFacturadorRaw>();
+    // 2️⃣ Construye la URL base dinámicamente
+    const baseUrl =
+      req?.protocol && req?.headers?.host
+        ? `${req.protocol}://${req.headers.host}`
+        : process.env.BASE_URL || 'http://localhost:3000';
+
+    // 3️⃣ Agrega el campo `url` a cada resultado
+    return documentos.map((d) => ({
+      ...d,
+      url: `${baseUrl}/public/pdf/${d.nombre_documento}`,
+    }));
   }
 }

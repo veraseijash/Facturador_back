@@ -8,11 +8,13 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CotizacionesDocumentosService } from './cotizaciones_documentos.service';
 import { CreateCotizacionesDocumentosDto } from './dto/create-cotizaciones_documentos.dto';
 import { UpdateCotizacionesDocumentosDto } from './dto/update-cotizaciones_documentos.dto';
 import { JwtUserGuard } from '../users/jwt-user.guard';
+import type { Request } from 'express';
 
 @Controller('cotizacionesDocumentos')
 export class CotizacionesDocumentosController {
@@ -60,9 +62,13 @@ export class CotizacionesDocumentosController {
 
   @UseGuards(JwtUserGuard)
   @Get('find/:id')
-  findByPrimerNivel(@Param('id', ParseIntPipe) id_primer_nivel: number) {
+  findByPrimerNivel(
+    @Param('id', ParseIntPipe) id_primer_nivel: number,
+    @Req() req: Request,
+  ) {
     return this.cotizacionesDocumentosService.findByPrimerNivel(
       id_primer_nivel,
+      req,
     );
   }
 }

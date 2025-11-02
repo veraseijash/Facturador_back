@@ -5,6 +5,8 @@ import { CotizacionesDocumentos } from './cotizaciones_documentos.entity';
 import { CreateCotizacionesDocumentosDto } from './dto/create-cotizaciones_documentos.dto';
 import { UpdateCotizacionesDocumentosDto } from './dto/update-cotizaciones_documentos.dto';
 import { CotizacionesDocumentosRaw } from './interfaces/documento-raw.interface';
+import { Request } from 'express';
+
 @Injectable()
 export class CotizacionesDocumentosService {
   constructor(
@@ -69,11 +71,13 @@ export class CotizacionesDocumentosService {
     };
   }
 
-  async findByPrimerNivel(id_primer_nivel: number) {
-    return await this.CotizacionesDocumentosRepository.createQueryBuilder('doc')
-      .select([
-        'doc.id_cot_doc AS id_doc_fact',
-        `CASE 
+  async findByPrimerNivel(id_primer_nivel: number, req?: Request) {
+    // 1️⃣ Consulta los datos desde la BD
+    const documentos =
+      await this.CotizacionesDocumentosRepository.createQueryBuilder('doc')
+        .select([
+          'doc.id_cot_doc AS id_doc_fact',
+          `CASE 
           WHEN doc.tipo_documento = '1' THEN '801 - Orden de Compra'
           WHEN doc.tipo_documento = '2' THEN '802 - Nota de Pedido'
           WHEN doc.tipo_documento = '3' THEN '803 - Contrato'
@@ -84,15 +88,27 @@ export class CotizacionesDocumentosService {
           WHEN doc.tipo_documento = '8' THEN 'HES - HES'
           WHEN doc.tipo_documento = '9' THEN 'CON - Conformidad'
         END AS tipo_documento`,
-        'doc.cot_id AS cot_id',
-        `'Cotizador' AS procedencia`,
-        `DATE_FORMAT(doc.fecha_documento, '%d-%m-%Y') AS fecha_documento`,
-        'doc.id_documento AS id_documento',
-        'doc.tipo_documento AS idtipo_documento',
-        'doc.nombre_documento AS nombre_documento',
-        'doc.id_cot_doc AS id',
-      ])
-      .where('doc.id_primer_nivel = :id_primer_nivel', { id_primer_nivel })
-      .getRawMany<CotizacionesDocumentosRaw>();
+          'doc.cot_id AS cot_id',
+          `'Cotizador' AS procedencia`,
+          `DATE_FORMAT(doc.fecha_documento, '%d-%m-%Y') AS fecha_documento`,
+          'doc.id_documento AS id_documento',
+          'doc.tipo_documento AS idtipo_documento',
+          'doc.nombre_documento AS nombre_documento',
+          'doc.id_cot_doc AS id',
+        ])
+        .where('doc.id_primer_nivel = :id_primer_nivel', { id_primer_nivel })
+        .getRawMany<CotizacionesDocumentosRaw>();
+
+    // 2️⃣ Construye la URL base dinámicamente
+    const baseUrl =
+      req?.protocol && req?.headers?.host
+        ? `${req.protocol}://${req.headers.host}`
+        : process.env.BASE_URL || 'http://localhost:3000';
+
+    // 3️⃣ Agrega el campo `url` a cada resultado
+    return documentos.map((d) => ({
+      ...d,
+      url: `${baseUrl}/public/pdf/${d.nombre_documento}`,
+    }));
   }
 }
