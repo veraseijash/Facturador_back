@@ -116,6 +116,31 @@ export class DataPrimerNivelService {
     return dataPrimerNivelFound;
   }
 
+  async findDataByPrimerNivelAndTerceros(
+    id_primer_nivel: number,
+    idsTerceros: number[], // lista de ids_tercer_nivel
+  ): Promise<Data_primer_nivel> {
+    const qb = this.dataPrimerNivelRepository
+      .createQueryBuilder('primer')
+      .leftJoinAndSelect('primer.cliente', 'cliente')
+      .leftJoinAndSelect('primer.dataSegundos', 'segundos')
+      .leftJoinAndSelect('segundos.dataTerceros', 'terceros')
+      .where('primer.id_primer_nivel = :id', { id: id_primer_nivel })
+      .andWhere('terceros.id_tercer_nivel IN (:...idsTerceros)', {
+        idsTerceros,
+      })
+      .orderBy('segundos.cuenta', 'ASC')
+      .addOrderBy('terceros.servicio', 'ASC');
+
+    const data = await qb.getOne();
+
+    if (!data) {
+      throw new HttpException('Registro no encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    return data;
+  }
+
   async deleteDataPrimerNivel(id_primer_nivel: number) {
     const dataPrimerNivelFound = await this.dataPrimerNivelRepository.findOne({
       where: { id_primer_nivel },

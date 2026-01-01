@@ -15,6 +15,7 @@ import { UpdateDataPrimerNiveDto } from './dto/update-data_primer_nivel.dto';
 import { FindDataPrimerNivelDto } from './dto/find-data-primer-nivel.dto';
 import { FindDataPrimerNivelIdDto } from './dto/find-data-primer-nivel-id.dto';
 import { CompareDataPrimerNivelDto } from './dto/compare-data_primer_nivel.dto';
+import { FindPrimerNivelTercerosDto } from './dto/find-primer-tercer.dto';
 import { JwtUserGuard } from '../users/jwt-user.guard';
 
 @Controller('dataPrimerNivel')
@@ -37,6 +38,15 @@ export class DataPrimerNivelController {
       dto.id,
       dto.tipo,
       dto.option,
+    );
+  }
+
+  @UseGuards(JwtUserGuard)
+  @Post('primer-nivel/terceros')
+  async getByPrimerNivelAndTerceros(@Body() body: FindPrimerNivelTercerosDto) {
+    return this.dataPrimerNivelService.findDataByPrimerNivelAndTerceros(
+      body.id_primer_nivel,
+      body.idsTerceros,
     );
   }
 
